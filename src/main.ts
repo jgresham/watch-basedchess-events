@@ -1,0 +1,112 @@
+import { createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
+import { contracts, SupportedChainId } from './contracts.js';
+import { Command } from 'commander';
+
+// Default values
+const DEFAULT_ENVIRONMENT = process.env.BC_ENVIRONMENT || 'staging';
+const DEFAULT_RPC_URL = process.env.RPC_URL;
+const DEFAULT_VERIFIER_URL = process.env.VERIFIER_URL;
+const DEFAULT_VERIFIER_KEY = process.env.VERIFIER_KEY;
+// Setup CLI with Commander
+const program = new Command();
+program
+  .version('1.0.0')
+  .description('Watch contract events and notify the verifier with customizable options')
+  .option('-r, --rpc-url <url> (or $RPC_URL)', 'RPC URL for the blockchain (required)', DEFAULT_RPC_URL)
+  .option('-vu, --verifier-url <url> (or $VERIFIER_URL)', 'URL of the verifier (required)', DEFAULT_VERIFIER_URL)
+  .option('-vk, --verifier-key <key> (or $VERIFIER_KEY)', 'Key of the verifier (required)', DEFAULT_VERIFIER_KEY)
+  .option('-e, --environment <url> (or $BC_ENVIRONMENT)', 'RPC URL for the blockchain', DEFAULT_ENVIRONMENT)
+  .option('-v, --verbose', 'Enable verbose logging', false) // Boolean flag, no value needed
+  .parse(process.argv);
+
+// Get parsed options
+const options = program.opts<{
+  rpcUrl: string;
+  verifierUrl: string;
+  verifierKey: string;
+  environment: string;
+  verbose: boolean;
+}>();
+
+if (!options.rpcUrl) {
+  console.error('RPC URL is required');
+  program.help();
+  process.exit(1);
+}
+
+if (!options.verifierUrl) {
+  console.error('Verifier URL is required');
+  program.help();
+  process.exit(1);
+}
+
+if (!options.verifierKey) {
+  console.error('Verifier key is required');
+  program.help();
+  process.exit(1);
+}
+
+let chainId: SupportedChainId = 84532;
+if (options.environment === 'production') {
+  chainId = 8453;
+}
+
+// USDC contract address on Ethereum Mainnet
+const contractAddress = contracts.gamesContract[chainId].address;
+const abi = contracts.gamesContract[chainId].abi;
+
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http(options.rpcUrl),
+});
+
+// Function to process event logs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function processEvent(log: any): Promise<void> {
+  const { gameId, message, signature, signer } = log.args;
+  console.log(`GameUpdateSynced detected:`);
+  console.log(`  Game ID: ${gameId}`);
+  console.log(`  Message: ${message}`);
+  console.log(`  Signature: ${signature}`);
+  console.log(`  Signer: ${signer}`);
+  console.log('---');
+
+  // Notify the verifier
+  const response = await fetch(options.verifierUrl, {
+    method: 'POST',
+    body: JSON.stringify({ gameId, message, signature, signer }),
+    headers: {
+      'X-API-Key': options.verifierKey,
+    },
+  });
+  const data = await response.json();
+  console.log(data);
+}
+
+// Main function to watch events
+function watchContractEvents(): void {
+  console.log('Starting to watch for GameUpdateSynced events... Press Ctrl+C to stop.');
+
+  const unwatch = publicClient.watchContractEvent({
+    address: contractAddress,
+    abi: abi,
+    eventName: 'GameUpdateSynced',
+    onLogs: (logs) => {
+      logs.forEach((log) => processEvent(log));
+    },
+    onError: (error) => {
+      console.error('Error watching events:', error);
+    },
+  });
+
+  // Handle process termination gracefully
+  process.on('SIGINT', () => {
+    console.log('\nStopping event watcher...');
+    unwatch();
+    process.exit(0);
+  });
+}
+
+// Start watching
+watchContractEvents();
