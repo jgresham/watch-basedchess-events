@@ -65,17 +65,22 @@ const publicClient = createPublicClient({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function processEvent(log: any): Promise<void> {
   const { gameId, message, signature, signer } = log.args;
+  const rawGameId = gameId;
+  const bigIntGameId = BigInt(rawGameId as string);
+  const contractGameId = Number(bigIntGameId);   // As number: 291 (if within safe range)
   console.log(`GameUpdateSynced detected:`);
-  console.log(`  Game ID: ${gameId}`);
+  console.log(`  Game ID: ${contractGameId}`);
   console.log(`  Message: ${message}`);
   console.log(`  Signature: ${signature}`);
   console.log(`  Signer: ${signer}`);
   console.log('---');
 
+
+
   // Notify the verifier
   const response = await fetch(options.verifierUrl, {
     method: 'POST',
-    body: JSON.stringify({ gameId, message, signature, signer }),
+    body: JSON.stringify({ contractGameId, message, signature, signer }),
     headers: {
       'X-API-Key': options.verifierKey,
     },
