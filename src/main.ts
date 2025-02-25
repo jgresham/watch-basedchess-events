@@ -14,8 +14,8 @@ program
   .version('1.0.0')
   .description('Watch contract events and notify the verifier with customizable options')
   .option('-r, --rpc-url <url> (or $RPC_URL)', 'RPC URL for the blockchain (required)', DEFAULT_RPC_URL)
-  .option('-vu, --verifier-url <url> (or $VERIFIER_URL)', 'URL of the verifier (required)', DEFAULT_VERIFIER_URL)
-  .option('-vk, --verifier-key <key> (or $VERIFIER_KEY)', 'Key of the verifier (required)', DEFAULT_VERIFIER_KEY)
+  .option('-u, --verifier-url <url> (or $VERIFIER_URL)', 'URL of the verifier (required)', DEFAULT_VERIFIER_URL)
+  .option('-k, --verifier-key <key> (or $VERIFIER_KEY)', 'Key of the verifier (required)', DEFAULT_VERIFIER_KEY)
   .option('-e, --environment <url> (or $BC_ENVIRONMENT)', 'RPC URL for the blockchain', DEFAULT_ENVIRONMENT)
   .option('-v, --verbose', 'Enable verbose logging', false) // Boolean flag, no value needed
   .parse(process.argv);
