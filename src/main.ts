@@ -64,7 +64,7 @@ const publicClient = createPublicClient({
 // Function to process event logs
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function processEvent(log: any): Promise<void> {
-  const { gameId, message, signature, signer } = log.args;
+  const { gameId, message, signature, signer, updateIndex } = log.args;
   const rawGameId = gameId;
   const bigIntGameId = BigInt(rawGameId as string);
   const contractGameId = Number(bigIntGameId);   // As number: 291 (if within safe range)
@@ -73,6 +73,7 @@ async function processEvent(log: any): Promise<void> {
   console.log(`  Message: ${message}`);
   console.log(`  Signature: ${signature}`);
   console.log(`  Signer: ${signer}`);
+  console.log(`  Update Index: ${updateIndex}`);
   console.log('---');
 
 
@@ -80,7 +81,7 @@ async function processEvent(log: any): Promise<void> {
   // Notify the verifier
   const response = await fetch(options.verifierUrl, {
     method: 'POST',
-    body: JSON.stringify({ contractGameId, message, signature, signer }),
+    body: JSON.stringify({ contractGameId, message, signature, signer, updateIndex }),
     headers: {
       'X-API-Key': options.verifierKey,
     },
