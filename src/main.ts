@@ -86,8 +86,13 @@ async function processEvent(log: any): Promise<void> {
       'X-API-Key': options.verifierKey,
     },
   });
-  const data = await response.json();
-  console.log(data);
+  // response contains "OK" if successful
+  const data = await response.text();
+  if (data === 'OK') {
+    console.log('Verifier verified successfully');
+  } else {
+    console.error('Failed to verify');
+  }
 }
 
 // Main function to watch events
