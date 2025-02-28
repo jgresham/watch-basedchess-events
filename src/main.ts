@@ -2,6 +2,7 @@ import { createPublicClient, http } from 'viem';
 import { mainnet } from 'viem/chains';
 import { contracts, SupportedChainId } from './contracts.js';
 import { Command } from 'commander';
+import { generateGameOverImage, processGameOver } from './gameOver.js';
 
 // Default values
 const DEFAULT_ENVIRONMENT = process.env.BC_ENVIRONMENT || 'staging';
@@ -87,19 +88,22 @@ async function processEvent(log: any): Promise<void> {
     },
   });
   // response contains "OK" if successful
-  const data = await response.text();
-  if (data === 'OK') {
-    console.log('Verifier verified successfully');
-  } else {
-    console.error('Failed to verify');
+  try {
+    const data = await response.json();
+    console.log(JSON.stringify(data, null, 2));
+  } catch (e) {
+    // not json response
+    const data = await response.text();
+    console.log(data);
   }
+
 }
 
 // Main function to watch events
 function watchContractEvents(): void {
   console.log('Starting to watch for GameUpdateSynced events... Press Ctrl+C to stop.');
 
-  const unwatch = publicClient.watchContractEvent({
+  const unwatchGameUpdateSynced = publicClient.watchContractEvent({
     address: contractAddress,
     abi: abi,
     eventName: 'GameUpdateSynced',
@@ -107,17 +111,31 @@ function watchContractEvents(): void {
       logs.forEach((log) => processEvent(log));
     },
     onError: (error) => {
-      console.error('Error watching events:', error);
+      console.error('Error watching GameUpdateSynced events:', error);
+    },
+  });
+
+  const unwatchGameOver = publicClient.watchContractEvent({
+    address: contractAddress,
+    abi: abi,
+    eventName: 'GameOver',
+    onLogs: (logs) => {
+      logs.forEach((log) => processGameOver(log));
+    },
+    onError: (error) => {
+      console.error('Error watching GameOver events:', error);
     },
   });
 
   // Handle process termination gracefully
   process.on('SIGINT', () => {
     console.log('\nStopping event watcher...');
-    unwatch();
+    unwatchGameUpdateSynced();
+    unwatchGameOver();
     process.exit(0);
   });
 }
 
 // Start watching
-watchContractEvents();
+// watchContractEvents();
+generateGameOverImage();

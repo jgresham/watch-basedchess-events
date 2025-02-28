@@ -24,3 +24,11 @@ export const contracts: Record<string, {
     }
   }
 }
+
+export const GameResult = {
+  NO_RESULT: 0,
+  WINNING_RESULT: 1,
+  DRAW_RESULT_AGREEMENT: 2,
+  DRAW_RESULT_STALEMATE: 3,
+  DRAW_RESULT_THREEFOLD_REPETITION: 4
+} as const;

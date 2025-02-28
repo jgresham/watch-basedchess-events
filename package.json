@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node build/src/main.js",
+    "run-script": "tsx src/gameOver.ts",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
@@ -19,6 +20,7 @@
     "refresh": "git pull && npm install && npm run build && pm2 restart main"
   },
   "dependencies": {
+    "canvas": "^3.1.0",
     "commander": "^13.1.0",
     "tslib": "~2.8",
     "viem": "^2.23.5"
@@ -36,6 +38,7 @@
     "prettier": "~3.4",
     "rimraf": "~6.0",
     "ts-api-utils": "~2.0",
+    "tsx": "^4.19.3",
     "typescript": "~5.7",
     "typescript-eslint": "~8.19",
     "vitest": "~2.1"
