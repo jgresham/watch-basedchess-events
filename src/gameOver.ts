@@ -1,6 +1,6 @@
 import { createCanvas, loadImage, registerFont } from "canvas";
 import { getFarcasterUserByAddress } from "./neynar.js";
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { truncateAddress } from "./util.js";
@@ -51,6 +51,7 @@ export const processGameOver = async (
     console.log(JSON.stringify(data, null, 2));
   } catch (e) {
     // not json response
+    console.log(e);
     const data = await response.text();
     console.log(data);
   }
@@ -93,11 +94,11 @@ export const generateGameOverImage = async ({
   // // const loserUsername = 'varuanrankashan';
   // const winnerUsername = 'johns';
   const loserUsername = farcasterUserLoser?.username || truncateAddress(loserIfNotDraw);
-  const winnerUsername = farcasterUserWinner?.username || truncateAddress(winnerIfNotDraw);
+  // const winnerUsername = farcasterUserWinner?.username || truncateAddress(winnerIfNotDraw);
   // const loserUsername = 'johns';
   // || farcasterUserWinner?.username || winnerIfNotDraw;
   const loserProfilePic = farcasterUserLoser?.pfp_url;
-  const winnerProfilePic = farcasterUserWinner?.pfp_url;
+  // const winnerProfilePic = farcasterUserWinner?.pfp_url;
 
   const canvas = createCanvas(IMAGE_WIDTH, IMAGE_HEIGHT);
   const ctx = canvas.getContext('2d');
@@ -201,7 +202,7 @@ export const generateGameOverImage = async ({
   const smallerFontSize = Math.floor(fontSize * 0.9); // Smaller text
   ctx.font = `${smallerFontSize}px Orbitron-black`; // Use a futuristic font if available
 
-  ctx.measureText(loserUsername).width
+  // ctx.measureText(loserUsername).width
   // ctx.drawImage(profilePic, 100, 100, 100, 100);
   const profilePicSize = smallerFontSize * 1.5; // Profile pic size relative to text
 
@@ -302,11 +303,11 @@ export const generateGameOverImage = async ({
   console.log("metadataPinResponse", metadataPinResponse);
   return `ipfs://${metadataPinResponse.IpfsHash}`;
 }
-generateGameOverImage({
-  contractAddress: '0x1234567890123456789012345678901234567890',
-  contractGameId: 1,
-  gameResult: 1,
-  winnerIfNotDraw: '0x2a99ec82d658f7a77ddebfd83d0f8f591769cb64',
-  loserIfNotDraw: '0x187c7b0393ebe86378128f2653d0930e33218899',
-  creator: '0x1234567890123456789012345678901234567890',
-});
+// generateGameOverImage({
+//   contractAddress: '0x1234567890123456789012345678901234567890',
+//   contractGameId: 1,
+//   gameResult: 1,
+//   winnerIfNotDraw: '0x2a99ec82d658f7a77ddebfd83d0f8f591769cb64',
+//   loserIfNotDraw: '0x187c7b0393ebe86378128f2653d0930e33218899',
+//   creator: '0x1234567890123456789012345678901234567890',
+// });

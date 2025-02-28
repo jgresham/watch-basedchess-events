@@ -2,7 +2,10 @@ import { createPublicClient, http } from 'viem';
 import { mainnet } from 'viem/chains';
 import { contracts, SupportedChainId } from './contracts.js';
 import { Command } from 'commander';
-import { generateGameOverImage, processGameOver } from './gameOver.js';
+import {
+  // generateGameOverImage,
+  processGameOver
+} from './gameOver.js';
 
 // Default values
 const DEFAULT_ENVIRONMENT = process.env.BC_ENVIRONMENT || 'staging';
@@ -93,6 +96,7 @@ async function processEvent(log: any): Promise<void> {
     console.log(JSON.stringify(data, null, 2));
   } catch (e) {
     // not json response
+    console.log(e);
     const data = await response.text();
     console.log(data);
   }
@@ -120,7 +124,7 @@ function watchContractEvents(): void {
     abi: abi,
     eventName: 'GameOver',
     onLogs: (logs) => {
-      logs.forEach((log) => processGameOver(log));
+      logs.forEach((log) => processGameOver({ log, chainId, verifierUrl: options.verifierUrl, verifierKey: options.verifierKey }));
     },
     onError: (error) => {
       console.error('Error watching GameOver events:', error);
@@ -137,5 +141,4 @@ function watchContractEvents(): void {
 }
 
 // Start watching
-// watchContractEvents();
-generateGameOverImage();
+watchContractEvents();

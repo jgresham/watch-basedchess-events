@@ -23,7 +23,8 @@ export default tseslint.config(
     },
 
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      "@typescript-eslint/no-explicit-any": "off"
     },
 
     languageOptions: {
