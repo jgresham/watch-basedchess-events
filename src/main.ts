@@ -80,7 +80,7 @@ async function processEvent(log: any): Promise<void> {
 
 
   // Notify the verifier
-  const response = await fetch(options.verifierUrl, {
+  const response = await fetch(options.verifierUrl + '/verifyGameUpdate', {
     method: 'POST',
     body: JSON.stringify({ contractGameId, message, signature, signer, updateIndex }),
     headers: {
