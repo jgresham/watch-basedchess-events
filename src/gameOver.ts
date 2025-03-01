@@ -287,7 +287,7 @@ export const generateGameOverImage = async ({
 
   const metadata = {
     name: `BasedChess victory`,
-    description: `${loserUsernameUntruncated} defeated ${winnerUsernameUntruncated}`,
+    description: `${winnerUsernameUntruncated} defeated ${loserUsernameUntruncated}`,
     image: `ipfs://${imageUrl}`,
     // external_link: "https://basedchess.xyz",
     properties: {

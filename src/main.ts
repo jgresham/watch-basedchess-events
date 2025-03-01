@@ -3,6 +3,7 @@ import { mainnet } from 'viem/chains';
 import { contracts, SupportedChainId } from './contracts.js';
 import { Command } from 'commander';
 import {
+  generateGameOverImage,
   // generateGameOverImage,
   processGameOver
 } from './gameOver.js';
@@ -21,6 +22,7 @@ program
   .option('-u, --verifier-url <url> (or $VERIFIER_URL)', 'URL of the verifier (required)', DEFAULT_VERIFIER_URL)
   .option('-k, --verifier-key <key> (or $VERIFIER_KEY)', 'Key of the verifier (required)', DEFAULT_VERIFIER_KEY)
   .option('-e, --environment <url> (or $BC_ENVIRONMENT)', 'RPC URL for the blockchain', DEFAULT_ENVIRONMENT)
+  .option('-t, --test <test>', 'Run in test mode', false)
   .option('-v, --verbose', 'Enable verbose logging', false) // Boolean flag, no value needed
   .parse(process.argv);
 
@@ -31,6 +33,7 @@ const options = program.opts<{
   verifierKey: string;
   environment: string;
   verbose: boolean;
+  test: string;
 }>();
 
 if (!options.rpcUrl) {
@@ -141,4 +144,15 @@ function watchContractEvents(): void {
 }
 
 // Start watching
-watchContractEvents();
+if (options.test === 'gennft') {
+  generateGameOverImage({
+    contractAddress: contractAddress,
+    contractGameId: 1,
+    gameResult: 1,
+    winnerIfNotDraw: '0x2a99ec82d658f7a77ddebfd83d0f8f591769cb64',
+    loserIfNotDraw: '0x187c7b0393ebe86378128f2653d0930e33218899',
+    creator: '0x2a99ec82d658f7a77ddebfd83d0f8f591769cb64',
+  });
+} else {
+  watchContractEvents();
+}

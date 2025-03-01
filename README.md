@@ -1,5 +1,10 @@
 # Watch BasedChess events
 
+To just test the nft generation and uploading to ipfs, run:
+```shell
+npx tsx src/main.ts --test gennft -r r -k k -u u
+```
+
 ## Dev
 ```shell
 npm install
