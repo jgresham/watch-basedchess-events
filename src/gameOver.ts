@@ -39,7 +39,8 @@ export const processGameOver = async (
   });
 
   // Notify the verifier
-  const response = await fetch(verifierUrl + + '/gameOverNft', {
+  console.log(`Notifying verifier with metadata URL: ${metadataUrl}`);
+  const response = await fetch(verifierUrl + '/gameOverNft', {
     method: 'POST',
     body: JSON.stringify({ contractAddress, contractGameId, metadataUrl }),
     headers: {
@@ -57,13 +58,14 @@ export const processGameOver = async (
   }
 }
 
-const IMAGE_WIDTH = 1024;  // Adjusted for clarity when scaled
-const IMAGE_HEIGHT = 768;
-const BACKGROUND_IMAGE_PATH = 'src/King.jpg'; // Replace with your chessboard image path
-
 // Get __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const IMAGE_WIDTH = 1024;  // Adjusted for clarity when scaled
+const IMAGE_HEIGHT = 768;
+const BACKGROUND_IMAGE_PATH = path.join(__dirname, 'assets', 'King.jpg'); // Replace with your chessboard image path
+
 
 export const generateGameOverImage = async ({
   contractAddress,
@@ -126,7 +128,7 @@ export const generateGameOverImage = async ({
   // registerFont(fontPathBold, { family: 'Orbitron-bold', weight: 'bold' });
   // const fontPathExtraBold = path.join(__dirname, 'fonts', 'Orbitron-ExtraBold.ttf');
   // registerFont(fontPathExtraBold, { family: 'Orbitron-extrabold', weight: 'extrabold' });
-  const fontPathBlack = path.join(__dirname, 'fonts', 'Orbitron-Black.ttf');
+  const fontPathBlack = path.join(__dirname, 'assets', 'fonts', 'Orbitron-Black.ttf');
   registerFont(fontPathBlack, { family: 'Orbitron-black', weight: 'black' });
   // const fontPathSemiBold = path.join(__dirname, 'fonts', 'Orbitron-SemiBold.ttf');
   // registerFont(fontPathSemiBold, { family: 'Orbitron-semibold', weight: 'semibold' });
