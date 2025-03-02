@@ -277,8 +277,8 @@ export const generateGameOverImage = async ({
   })
   const imagePinResponse = await pinata.upload.base64(buffer.toString('base64'));
   console.log("imagePinResponse", imagePinResponse);
-  const imageUrl = imagePinResponse.IpfsHash;
-  console.log(`Image URL: ipfs://${imageUrl}`);
+  const imageHash = imagePinResponse.IpfsHash;
+  console.log(`Image URL: https://ipfs.io/ipfs/${imageHash}`);
 
   const loserUsernameUntruncated = farcasterUserLoser?.username || loserIfNotDraw;
   const winnerUsernameUntruncated = farcasterUserWinner?.username || winnerIfNotDraw;
@@ -288,7 +288,7 @@ export const generateGameOverImage = async ({
   const metadata = {
     name: `BasedChess victory`,
     description: `${winnerUsernameUntruncated} defeated ${loserUsernameUntruncated}`,
-    image: `ipfs://${imageUrl}`,
+    image: `ipfs://${imageHash}`,
     // external_link: "https://basedchess.xyz",
     properties: {
       contractAddress: contractAddress,
@@ -297,13 +297,15 @@ export const generateGameOverImage = async ({
       winner: winnerIfNotDraw,
       loser: loserIfNotDraw,
       gameCreator: creator,
-      ipfsImageUrl: `ipfs://${imageUrl}`,
+      ipfsImageUrl: `ipfs://${imageHash}`,
     }
   };
 
   const metadataPinResponse = await pinata.upload.json(metadata);
+  const metadataHash = metadataPinResponse.IpfsHash;
+  console.log(`Image URL: https://ipfs.io/ipfs/${metadataHash}`);
   console.log("metadataPinResponse", metadataPinResponse);
-  return `ipfs://${metadataPinResponse.IpfsHash}`;
+  return `ipfs://${metadataHash}`;
 }
 // generateGameOverImage({
 //   contractAddress: '0x1234567890123456789012345678901234567890',

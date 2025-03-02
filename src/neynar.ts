@@ -1,3 +1,10 @@
+if (process.env.NEYNAR_API_KEY) {
+  console.log('NEYNAR_API_KEY is set');
+} else {
+  console.error('NEYNAR_API_KEY is not set');
+  process.exit(1);
+}
+
 export const getFarcasterUserByAddress = async (address: string): Promise<{
   fid: number;
   username: string;
