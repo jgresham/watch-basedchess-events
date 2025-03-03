@@ -7,9 +7,19 @@ import { truncateAddress } from "./util.js";
 import { PinataSDK } from "pinata-web3";
 import { contracts, SupportedChainId } from "./contracts.js";
 
+export type GameOverLog = {
+  args: {
+    gameId: any;
+    result: number;
+    winnerIfNotDraw: `0x${string}`;
+    loserIfNotDraw: `0x${string}`;
+    creator: `0x${string}`;
+  };
+};
+
 export const processGameOver = async (
   { log, chainId, verifierUrl, verifierKey }:
-    { log: any, chainId: SupportedChainId, verifierUrl: string, verifierKey: string }
+    { log: GameOverLog, chainId: SupportedChainId, verifierUrl: string, verifierKey: string }
 ) => {
   const { gameId, result, winnerIfNotDraw, loserIfNotDraw, creator } = log.args;
   const bigIntGameId = BigInt(gameId as string);
@@ -29,6 +39,7 @@ export const processGameOver = async (
   console.log(`  Loser (if not draw): ${farcasterUserLoser?.username}`);
   const contractAddress = contracts.gamesContract[chainId].address;
 
+  console.log(`Generating NFT image and metadata URL`);
   const metadataUrl = await generateGameOverImage({
     contractAddress: contractAddress,
     contractGameId: contractGameId,
@@ -47,13 +58,14 @@ export const processGameOver = async (
       'X-API-Key': verifierKey,
     },
   });
+  let data;
   try {
-    const data = await response.json();
+    data = await response.json();
     console.log(JSON.stringify(data, null, 2));
   } catch (e) {
     // not json response
     console.log(e);
-    const data = await response.text();
+    data = await response.text();
     console.log(data);
   }
 }
@@ -62,7 +74,7 @@ export const processGameOver = async (
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const IMAGE_WIDTH = 1024;  // Adjusted for clarity when scaled
+const IMAGE_WIDTH = 768;  // Adjusted for clarity when scaled
 const IMAGE_HEIGHT = 768;
 const BACKGROUND_IMAGE_PATH = path.join(__dirname, 'assets', 'King.jpg'); // Replace with your chessboard image path
 
@@ -128,6 +140,7 @@ export const generateGameOverImage = async ({
   // registerFont(fontPathBold, { family: 'Orbitron-bold', weight: 'bold' });
   // const fontPathExtraBold = path.join(__dirname, 'fonts', 'Orbitron-ExtraBold.ttf');
   // registerFont(fontPathExtraBold, { family: 'Orbitron-extrabold', weight: 'extrabold' });
+  console.log(`registering font Orbitron-black`);
   const fontPathBlack = path.join(__dirname, 'assets', 'fonts', 'Orbitron-Black.ttf');
   registerFont(fontPathBlack, { family: 'Orbitron-black', weight: 'black' });
   // const fontPathSemiBold = path.join(__dirname, 'fonts', 'Orbitron-SemiBold.ttf');
@@ -194,7 +207,19 @@ export const generateGameOverImage = async ({
 
 
   // Load the loser's profile picture
-  const profilePic = await loadImage(loserProfilePic); // Example avatar
+  let profilePic;
+  try {
+    if (!loserProfilePic) {
+      console.log("no profile pic found for loser");
+      profilePic = await loadImage('https://basedchess.xyz/based-chess-logo-200.jpg');
+    } else {
+      profilePic = await loadImage(loserProfilePic); // Example avatar
+    }
+  } catch (error) {
+    console.error(error);
+    console.log("unable to load profile pic or default profile pic. continuing...");
+  }
+
   // const profilePic = new Image();
   // profilePic.crossOrigin = 'Anonymous';
   // profilePic.src = profilePicUrl;
@@ -303,8 +328,7 @@ export const generateGameOverImage = async ({
 
   const metadataPinResponse = await pinata.upload.json(metadata);
   const metadataHash = metadataPinResponse.IpfsHash;
-  console.log(`Image URL: https://ipfs.io/ipfs/${metadataHash}`);
-  console.log("metadataPinResponse", metadataPinResponse);
+  console.log(`Metadata URL: https://ipfs.io/ipfs/${metadataHash}`);
   return `ipfs://${metadataHash}`;
 }
 // generateGameOverImage({

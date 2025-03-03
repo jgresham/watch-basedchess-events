@@ -3,6 +3,7 @@ import { mainnet } from 'viem/chains';
 import { contracts, SupportedChainId } from './contracts.js';
 import { Command } from 'commander';
 import {
+  GameOverLog,
   generateGameOverImage,
   // generateGameOverImage,
   processGameOver
@@ -59,7 +60,7 @@ if (options.environment === 'production') {
   chainId = 8453;
 }
 
-// USDC contract address on Ethereum Mainnet
+// Games contract address on Base or Base Sepolia
 const contractAddress = contracts.gamesContract[chainId].address;
 const abi = contracts.gamesContract[chainId].abi;
 
@@ -127,7 +128,7 @@ function watchContractEvents(): void {
     abi: abi,
     eventName: 'GameOver',
     onLogs: (logs) => {
-      logs.forEach((log) => processGameOver({ log, chainId, verifierUrl: options.verifierUrl, verifierKey: options.verifierKey }));
+      logs.forEach((log) => processGameOver({ log: log as unknown as GameOverLog, chainId, verifierUrl: options.verifierUrl, verifierKey: options.verifierKey }));
     },
     onError: (error) => {
       console.error('Error watching GameOver events:', error);
