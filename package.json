@@ -18,7 +18,8 @@
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
     "prettier:check": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --check",
     "test:watch": "vitest unit",
-    "refresh": "git pull && npm install && npm run build && pm2 restart main"
+    "start:prod": "pm2 start build/src/main.js --name main --time",
+    "refresh": "git pull && npm install && npm run build && pm2 restart main --time"
   },
   "dependencies": {
     "canvas": "^3.1.0",

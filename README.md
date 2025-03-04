@@ -24,6 +24,42 @@ npm run build
 pm2 run build/src/index.js
 ```
 
+## Setup VM
+download deps
+`sudo yum install git`
+For canvas
+`sudo yum install gcc-c++ cairo-devel pango-devel libjpeg-turbo-devel`
+`sudo yum install python38`
+`sudo alternatives --set python3 /usr/bin/python3.8`
+Now `npm i` will succeed
+Install nodejs v22 using nvm and script at https://nodejs.org/en/download
+`git clone https://github.com/jgresham/watch-basedchess-events`
+`npm i`
+`npm i -g pm2`
+`npm run build`
+
+Set Env vars
+```shell
+nano ~/.bashrc
+
+
+export BC_ENVIRONMENT=
+export RPC_URL=
+export VERIFIER_URL=
+export VERIFIER_KEY=
+export NEYNAR_API_KEY=
+export PINATA_GATEWAY_URL=
+export PINATA_JWT
+
+
+source ~/.bashrc
+```
+
+When modifying or adding new vars, you must stop and start pm2 process
+
+`npm run start:prod`
+
+
 
 # node-typescript-boilerplate
 

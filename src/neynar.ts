@@ -21,8 +21,9 @@ export const getFarcasterUserByAddress = async (address: string): Promise<{
 
   const data = await response.json();
   console.log(data);
-  if (data?.[address] && data[address].length > 0) {
-    const { fid, username, display_name, pfp_url } = data[address][0];
+  const lowerCaseAddress = address.toLowerCase();
+  if (data && data[lowerCaseAddress] && data[lowerCaseAddress].length > 0) {
+    const { fid, username, display_name, pfp_url } = data[lowerCaseAddress][0];
     console.log(`For address ${address}, found user ${username}, ${fid}, ${display_name}, ${pfp_url}`);
     return { fid, username, display_name, pfp_url };
   } else {
@@ -30,3 +31,10 @@ export const getFarcasterUserByAddress = async (address: string): Promise<{
   }
   return null;
 };
+
+// const test = async () => {
+//   const user = await getFarcasterUserByAddress('0x2a99EC82d658F7a77DdEbFd83D0f8F591769cB64');
+//   console.log(user);
+// };
+
+// test();
